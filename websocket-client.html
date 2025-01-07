@@ -1,0 +1,69 @@
+<html>
+<head>
+</head>
+<body>
+    <form id="nameForm"  style="display: block;">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="messageSection" style="display: none;">
+        <form id="input-form">
+            <label for="message">Enter Message:</label>
+            <input type="text" id="message" name="message"><br><br>
+            <input type="submit" value="Send">
+        </form>
+    </div>
+    <div id="messages"></div>
+
+    <script>
+        document.getElementById("nameForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent the form from submitting the traditional way
+
+            const name = document.getElementById("name").value;
+            if (name) {
+                // Show the message section if name is provided
+                document.getElementById("nameForm").style.display = "none";
+                document.getElementById("messageSection").style.display = "block";
+            } else {
+                alert("Please enter a name.");
+            }
+        });
+    </script>
+
+    <script>
+        const webSocket = new WebSocket('ws://localhost:443/');
+        
+        webSocket.onmessage = (event) => {
+            console.log(event);
+            const eventData = isJson(event.data) ? JSON.parse(event.data) : event.data;
+            const sender = eventData.name ? eventData.name : "server";
+            const message = eventData.message ? eventData.message : eventData;
+            document.getElementById('messages').innerHTML += 'Message from ' + sender + ': ' + message + "<br>";
+        };
+        webSocket.addEventListener("open", () => {
+            console.log("We are connected");
+        });
+        function sendMessage(event) {
+            const name = document.getElementById("name").value;
+            var inputMessage = document.getElementById('message');
+            const messageJson = {
+                message: inputMessage.value,
+                name
+            };
+            webSocket.send(JSON.stringify(messageJson));
+            inputMessage.value = "";
+            event.preventDefault();
+        }
+        function isJson(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }  
+            return true;
+        }
+        document.getElementById('input-form').addEventListener('submit', sendMessage);
+    </script>
+</body>
+</html>

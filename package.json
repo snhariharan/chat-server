@@ -1,0 +1,15 @@
+{
+  "name": "chat-server",
+  "version": "1.0.0",
+  "description": "Chat server",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "s.n.hariharan@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}
